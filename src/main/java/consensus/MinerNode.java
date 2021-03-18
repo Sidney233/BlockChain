@@ -3,7 +3,7 @@ package consensus;
 import config.MiniChainConfig;
 import data.*;
 import utils.MinerUtil;
-import utils.SHA256Util;
+import utils.SecurityUtil;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -71,13 +71,13 @@ public class MinerNode extends Thread {
         //todo
         Queue<String> queue = new LinkedList<String>();
         for(Transaction element: transactions) {
-            queue.offer(SHA256Util.sha256Digest(element.toString()));
+            queue.offer(SecurityUtil.sha256Digest(element.toString()));
         }
         String a, b, c;
         while (queue.size() != 1) {
             a = queue.poll();
             b = queue.poll();
-            c = SHA256Util.sha256Digest(a + b);
+            c = SecurityUtil.sha256Digest(a + b);
             queue.offer(c);
         }
         String hash;
@@ -95,11 +95,11 @@ public class MinerNode extends Thread {
     private void mine(BlockBody blockBody) {
         Block block = getBlock(blockBody);
         while (true) {
-            String blockHash = SHA256Util.sha256Digest(block.toString());
+            String blockHash = SecurityUtil.sha256Digest(block.toString());
             if (blockHash.startsWith(MinerUtil.hashPrefixTarget())) {
                 System.out.println("Mined a new Block! Detail of the new Block : ");
                 System.out.println(block.toString());
-                System.out.println("And the hash of this Block is : " + SHA256Util.sha256Digest(block.toString()) +
+                System.out.println("And the hash of this Block is : " + SecurityUtil.sha256Digest(block.toString()) +
                                     ", you will see the hash value in next Block's preBlockHash field.");
                 System.out.println();
                 blockChain.addNewBlock(block);
@@ -125,7 +125,7 @@ public class MinerNode extends Thread {
     public Block getBlock(BlockBody blockBody) {
         //todo
         BlockHeader blockHeader =
-                new BlockHeader(SHA256Util.sha256Digest(blockChain.getNewestBlock().toString()),
+                new BlockHeader(SecurityUtil.sha256Digest(blockChain.getNewestBlock().toString()),
                 blockBody.getMerkleRootHash(), Math.abs(new Random().nextLong()));
         Block block = new Block(blockHeader, blockBody);
         return block;
