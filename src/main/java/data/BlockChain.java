@@ -1,6 +1,6 @@
 package data;
 
-import utils.SHA256Util;
+import utils.SecurityUtil;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -17,7 +17,7 @@ public class BlockChain {
                                                             Math.abs(new Random().nextLong()));
         Block genesisBlock = new Block(genesisBlockHeader, null);
         System.out.println("Create the genesis Block! ");
-        System.out.println("And the hash of genesis Block is : " + SHA256Util.sha256Digest(genesisBlock.toString()) +
+        System.out.println("And the hash of genesis Block is : " + SecurityUtil.sha256Digest(genesisBlock.toString()) +
                 ", you will see the hash value in next Block's preBlockHash field.");
         System.out.println();
         chain.add(genesisBlock);

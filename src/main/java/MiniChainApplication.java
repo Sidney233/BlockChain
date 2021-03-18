@@ -4,7 +4,7 @@ import data.BlockBody;
 import data.Transaction;
 import data.TransactionPool;
 import network.NetWork;
-import utils.SHA256Util;
+import utils.SecurityUtil;
 
 public class MiniChainApplication {
 
