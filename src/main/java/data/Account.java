@@ -42,6 +42,14 @@ public class Account {
         return walletAddress;
     }
 
+    public  int getAmount(UTXO[] trueUTXOs) {
+        int amount = 0;
+        for (int i =0; i < trueUTXOs.length; i++) {
+            amount = trueUTXOs[i].getAmount();
+        }
+        return amount;
+    }
+
     @Override
     public String toString() {
         return "Account{" +

@@ -1,5 +1,6 @@
 package data;
 
+import config.MiniChainConfig;
 import utils.SecurityUtil;
 
 import java.util.LinkedList;
@@ -11,11 +12,18 @@ import java.util.Random;
 public class BlockChain {
 
     private final LinkedList<Block> chain = new LinkedList<>();
+    private final Account[] accounts;
 
     public BlockChain() {
+        this.accounts = new Account[MiniChainConfig.ACCOUNT_NUM];
+        for (int i = 0; i < accounts.length; ++i) {
+            accounts[i] = new Account();
+        }
+        Transaction[] transactions = genesisTransactions(accounts);
         BlockHeader genesisBlockHeader = new BlockHeader(null, null,
                                                             Math.abs(new Random().nextLong()));
-        Block genesisBlock = new Block(genesisBlockHeader, null);
+        BlockBody genesisBlockBody = new BlockBody(null, transactions);
+        Block genesisBlock = new Block(genesisBlockHeader, genesisBlockBody);
         System.out.println("Create the genesis Block! ");
         System.out.println("And the hash of genesis Block is : " + SecurityUtil.sha256Digest(genesisBlock.toString()) +
                 ", you will see the hash value in next Block's preBlockHash field.");
@@ -40,5 +48,10 @@ public class BlockChain {
     public Block getNewestBlock() {
         return chain.peekLast();
     }
-
+    private Transaction[] genesisTransactions(Account[] accounts) {
+        UTXO[] outUtxos = new UTXO[accounts.length];
+        for (int i = 0; i < accounts.length; ++i) {
+            
+        }
+    }
 }
