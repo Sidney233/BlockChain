@@ -10,27 +10,27 @@ import java.util.Arrays;
  */
 public class Transaction {
 
-    private final UTXO[] inUTXO;
-    private final UTXO[] outUTXO;
+    private final UTXO[] inUtxos;
+    private final UTXO[] outUtxos;
 
-    private final byte[] sendSign;
-    private final PublicKey sendPublicKey;
+    private final byte[] sendSign;  // 交易发送方的私钥签名
+    private final PublicKey sendPublicKey; // 交易发送方的公钥，方便矿工和其他节点进行验签，确保交易未被篡改
     private final long timestamp;
 
-    public Transaction(UTXO[] inUTXO, UTXO[] outUTXO, byte[] sendSign, PublicKey sendPublicKey, long timestamp) {
-        this.inUTXO = inUTXO;
-        this.outUTXO = outUTXO;
+    public Transaction(UTXO[] inUtxos, UTXO[] outUtxos, byte[] sendSign, PublicKey sendPublicKey, long timestamp) {
+        this.inUtxos = inUtxos;
+        this.outUtxos = outUtxos;
         this.sendSign = sendSign;
         this.sendPublicKey = sendPublicKey;
         this.timestamp = timestamp;
     }
 
-    public UTXO[] getInUTXO() {
-        return inUTXO;
+    public UTXO[] getInUtxos() {
+        return inUtxos;
     }
 
-    public UTXO[] getOutUTXO() {
-        return outUTXO;
+    public UTXO[] getOutUtxos() {
+        return outUtxos;
     }
 
     public byte[] getSendSign() {
@@ -48,8 +48,8 @@ public class Transaction {
     @Override
     public String toString() {
         return "\nTransaction{" +
-                "\ninUTXO=" + Arrays.toString(inUTXO) +
-                ", \noutUTXO=" + Arrays.toString(outUTXO) +
+                "\ninUtxos=" + Arrays.toString(inUtxos) +
+                ", \noutUtxos=" + Arrays.toString(outUtxos) +
                 ", \nsendSign=" + SecurityUtil.bytes2HexString(sendSign) +
                 ", \nsendPublicKey=" + SecurityUtil.bytes2HexString(sendPublicKey.getEncoded()) +
                 ", \ntimestamp=" + timestamp +
