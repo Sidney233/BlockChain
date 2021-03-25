@@ -52,6 +52,7 @@ public class Account {
         return walletAddress;
     }
 
+<<<<<<< HEAD
     /**
      * 根据未使用的utxo计算账户的余额
      * @param trueUtxos 未使用的utxo
@@ -73,6 +74,8 @@ public class Account {
         return privateKey;
     }
 
+=======
+>>>>>>> parent of 3a80dd4 (更改部分代码)
     @Override
     public String toString() {
         return "Account{" +

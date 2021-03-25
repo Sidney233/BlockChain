@@ -1,9 +1,6 @@
 package data;
 
-import utils.SecurityUtil;
-
 import java.security.PublicKey;
-import java.util.Arrays;
 
 /**
  * 对交易的抽象
@@ -24,6 +21,7 @@ public class Transaction {
         this.sendPublicKey = sendPublicKey;
         this.timestamp = timestamp;
     }
+<<<<<<< HEAD
 
     public UTXO[] getInUtxos() {
         return inUtxos;
@@ -55,4 +53,6 @@ public class Transaction {
                 ", \ntimestamp=" + timestamp +
                 '}';
     }
+=======
+>>>>>>> parent of 3a80dd4 (更改部分代码)
 }

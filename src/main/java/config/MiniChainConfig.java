@@ -12,8 +12,11 @@ public class MiniChainConfig {
 
     public static final int MAX_TRANSACTION_COUNT = 11;
 
+<<<<<<< HEAD
     public static final int ACCOUNT_NUM = 100;
 
     public static final int INIT_AMOUNT = 10000;
 
+=======
+>>>>>>> parent of 3a80dd4 (更改部分代码)
 }
