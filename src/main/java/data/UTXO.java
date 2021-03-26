@@ -3,6 +3,8 @@ package data;
 import utils.SecurityUtil;
 
 import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.Stack;
 
 public class UTXO {
 
@@ -10,7 +12,6 @@ public class UTXO {
     private final int amount;
     private final byte[] publicKeyHash;
 
-<<<<<<< HEAD
     /**
      * 构建一个UTXO
      * @param walletAddress 交易获得方的钱包地址
@@ -18,9 +19,6 @@ public class UTXO {
      * @param publicKey 交易获得方的公钥（公钥是公开的）
      */
     public UTXO(String walletAddress, int amount, PublicKey publicKey) {
-=======
-    public UTXO(String walletAddress, int amount, PublicKey publicKey){
->>>>>>> parent of 3a80dd4 (更改部分代码)
         this.walletAddress = walletAddress;
         this.amount = amount;
         // 对公钥进行哈希摘要: RIPEMD160(SHA256(PubK)，作为解锁脚本数据
@@ -28,7 +26,6 @@ public class UTXO {
                 SecurityUtil.sha256Digest(publicKey.getEncoded()));
     }
 
-<<<<<<< HEAD
     /**
      * 模拟utxo的解锁脚本，只有使用对应的私钥签名和公钥，正确解锁才能使用该utxo作为交易输入
      * @param sign 账户私钥签名，这里我们这么约定:签名数据为公钥二进制数据
@@ -89,7 +86,4 @@ public class UTXO {
                 ", publicKeyHash=" + SecurityUtil.bytes2HexString(publicKeyHash) +
                 '}';
     }
-=======
-
->>>>>>> parent of 3a80dd4 (更改部分代码)
 }

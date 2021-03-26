@@ -1,9 +1,6 @@
 package data;
 
-<<<<<<< HEAD
 import network.Network;
-=======
->>>>>>> parent of 3a80dd4 (更改部分代码)
 import utils.SecurityUtil;
 
 import java.util.HashSet;
@@ -16,7 +13,6 @@ import java.util.Set;
  */
 public class BlockChain {
 
-<<<<<<< HEAD
     private final LinkedList<Block> blocks;
     private final Network network;
 
@@ -30,14 +26,6 @@ public class BlockChain {
         BlockBody genesisBlockBody = new BlockBody(null, new Transaction[]{});
         Block genesisBlock = new Block(genesisBlockHeader, genesisBlockBody);
 
-=======
-    private final LinkedList<Block> chain = new LinkedList<>();
-
-    public BlockChain() {
-        BlockHeader genesisBlockHeader = new BlockHeader(null, null,
-                                                            Math.abs(new Random().nextLong()));
-        Block genesisBlock = new Block(genesisBlockHeader, null);
->>>>>>> parent of 3a80dd4 (更改部分代码)
         System.out.println("Create the genesis Block! ");
         System.out.println("And the hash of genesis Block is : " + SecurityUtil.sha256Digest(genesisBlock.toString()) +
                 ", you will see the hash value in next Block's preBlockHash field.");
@@ -99,7 +87,6 @@ public class BlockChain {
         return blocks.peekLast();
     }
 
-<<<<<<< HEAD
 
     public int getAllAccountAmount() {
         Account[] accounts = network.getAccounts();
@@ -114,6 +101,4 @@ public class BlockChain {
     public LinkedList<Block> getBlocks() {
         return blocks;
     }
-=======
->>>>>>> parent of 3a80dd4 (更改部分代码)
 }
