@@ -5,6 +5,7 @@ import data.*;
 import utils.MinerUtil;
 import utils.SecurityUtil;
 
+import java.security.PublicKey;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
@@ -45,6 +46,10 @@ public class MinerNode extends Thread {
 
                 // 从交易池中获取一批次的交易
                 Transaction[] transactions = transactionPool.getAll();
+                if (!check(transactions)) {
+                    System.out.println("transaction error!");
+                    System.exit(-1);
+                }
 
                 // 以交易为参数，调用getBlockBody方法
                 BlockBody blockBody = getBlockBody(transactions);
@@ -57,6 +62,19 @@ public class MinerNode extends Thread {
         }
     }
 
+    private boolean check(Transaction[] transactions) {
+        for (int i = 0; i < transactions.length; ++i) {
+            Transaction transaction = transactions[i];
+            byte[] data = SecurityUtil.utxos2Bytes(transaction.getInUTXO(), transaction.getOutUTXO());
+            byte[] sign = transaction.getSendSign();
+            PublicKey publicKey = transaction.getSendPublicKey();
+            if (!SecurityUtil.verify(data, sign, publicKey)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * 该方法根据传入的参数中的交易，构造并返回一个相应的区块体对象
      *
@@ -66,23 +84,40 @@ public class MinerNode extends Thread {
      *
      * @return 根据参数中的交易构造出的区块体
      */
+//    public BlockBody getBlockBody(Transaction[] transactions) {
+//        assert transactions != null && transactions.length == MiniChainConfig.MAX_TRANSACTION_COUNT;
+//        //todo
+////        Queue<String> queue = new LinkedList<String>();
+////        for(Transaction element: transactions) {
+////            queue.offer(SecurityUtil.sha256Digest(element.toString()));
+////        }
+////        String a, b, c;
+////        while (queue.size() != 1) {
+////            a = queue.poll();
+////            b = queue.poll();
+////            c = SecurityUtil.sha256Digest(a + b);
+////            queue.offer(c);
+////        }
+////        String hash;
+////        hash = queue.poll();
+////        BlockBody blockBody = new BlockBody(hash, transactions);
+////        return blockBody;
     public BlockBody getBlockBody(Transaction[] transactions) {
         assert transactions != null && transactions.length == MiniChainConfig.MAX_TRANSACTION_COUNT;
         //todo
-        Queue<String> queue = new LinkedList<String>();
-        for(Transaction element: transactions) {
-            queue.offer(SecurityUtil.sha256Digest(element.toString()));
+        LinkedList<String> hashValues = new LinkedList<>();
+        for (Transaction transaction : transactions) {
+            hashValues.add(SecurityUtil.sha256Digest(transaction.toString()));
         }
-        String a, b, c;
-        while (queue.size() != 1) {
-            a = queue.poll();
-            b = queue.poll();
-            c = SecurityUtil.sha256Digest(a + b);
-            queue.offer(c);
+        while (hashValues.size() > 1) {
+            int size = hashValues.size();
+            for (int i = 0; i < size; i += 2) {
+                String firstHash = hashValues.poll();
+                String secondHash = hashValues.poll();
+                hashValues.offer(SecurityUtil.sha256Digest(firstHash + secondHash));
+            }
         }
-        String hash;
-        hash = queue.poll();
-        BlockBody blockBody = new BlockBody(hash, transactions);
+        BlockBody blockBody = new BlockBody(hashValues.poll(), transactions);
         return blockBody;
     }
 
