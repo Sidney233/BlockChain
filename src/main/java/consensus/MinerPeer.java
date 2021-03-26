@@ -3,6 +3,8 @@ package consensus;
 import config.MiniChainConfig;
 import data.*;
 import network.Network;
+import spv.Proof;
+import spv.SpvPeer;
 import utils.MinerUtil;
 import utils.SecurityUtil;
 
@@ -65,6 +67,8 @@ public class MinerPeer extends Thread {
 
                 // 以blockBody为参数，调用mine方法
                 Block block = mine(blockBody);
+
+                boardcast(block);
 
                 // 输出所有账户的余额总数
                 System.out.println("the sum of all account amount: " + blockChain.getAllAccountAmount());
@@ -176,5 +180,59 @@ public class MinerPeer extends Thread {
         return block;
     }
 
+    public Proof getProof(String proofTxHash) {
 
+        Block proofBlock = null;
+        int proofHeight = -1;
+
+        for (Block block: blockChain.getBlocks()) {
+            ++proofHeight;
+            for (Transaction transaction: block.getBlockBody().getTransactions()) {
+                String txHash = SecurityUtil.sha256Digest(transaction.toString());
+                if (txHash.equals(proofTxHash)) {
+                    proofBlock = block;
+                    break;
+                }
+            }
+        }
+
+        if (proofBlock == null) {
+            return null;
+        }
+
+        List<Proof.Node> proofPath = new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        String pathHash = proofTxHash;
+        for (Transaction transaction: proofBlock.getBlockBody().getTransactions()) {
+            String txHash = SecurityUtil.sha256Digest(transaction.toString());
+            list.add(txHash);
+        }
+
+        while (list.size() != 1) {
+            List<String> newList = new ArrayList<>();
+            for (int i = 0; i < list.size(); i += 2) {
+                String leftHash = list.get(i);
+                String rightHash = (i + 1 < list.size() ? list.get(i + 1): leftHash);
+                String parentHash = SecurityUtil.sha256Digest(leftHash + rightHash);
+                newList.add(parentHash);
+
+                if (pathHash.equals(leftHash)) {
+                    Proof.Node proofNode = new Proof.Node(rightHash, Proof.Orientation.RIGHT);
+                    proofPath.add(proofNode);
+                    pathHash = parentHash;
+                }
+            }
+            list = newList;
+        }
+        String proofMerkleRootHash = list.get(0);
+
+        return new Proof(proofTxHash, proofMerkleRootHash, proofHeight, proofPath);
+    }
+
+    public void boardcast(Block block) {
+        SpvPeer[] spvPeers = network.getSpvPeers();
+        for (SpvPeer spvPeer: spvPeers) {
+            spvPeer.accept(block.getBlockHeader());
+        }
+    }
 }
