@@ -95,4 +95,13 @@ public class BlockChain {
     public Account[] getAccounts() {
         return accounts;
     }
+
+    public int getAllAccountAmount() {
+        int sumAmount = 0;
+        for (int i = 0; i < accounts.length; ++i) {
+            UTXO[] trueUtxo = getTrueUtxos(accounts[i].getWalletAddress());
+            sumAmount += accounts[i].getAmount(trueUtxo);
+        }
+        return sumAmount;
+    }
 }

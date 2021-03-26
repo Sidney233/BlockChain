@@ -57,6 +57,8 @@ public class MinerNode extends Thread {
                 // 以blockBody为参数，调用mine方法
                 mine(blockBody);
 
+                System.out.println("The sum of all account amount: " + blockChain.getAllAccountAmount());
+
                 transactionPool.notify();
             }
         }
