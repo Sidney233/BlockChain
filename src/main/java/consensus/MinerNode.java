@@ -7,7 +7,6 @@ import utils.SecurityUtil;
 
 import java.security.PublicKey;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -46,8 +45,10 @@ public class MinerNode extends Thread {
 
                 // 从交易池中获取一批次的交易
                 Transaction[] transactions = transactionPool.getAll();
-                if (!check(transactions)) {
-                    System.out.println("transaction error!");
+
+                //对交易签名进行验签
+                if(!check(transactions)){
+                    System.out.println("transaction error");
                     System.exit(-1);
                 }
 
@@ -56,21 +57,19 @@ public class MinerNode extends Thread {
 
                 // 以blockBody为参数，调用mine方法
                 mine(blockBody);
-
-                System.out.println("The sum of all account amount: " + blockChain.getAllAccountAmount());
+                System.out.println("the sum of all account amount:"+blockChain.getAllAccountAmount());
 
                 transactionPool.notify();
             }
         }
     }
-
-    private boolean check(Transaction[] transactions) {
-        for (int i = 0; i < transactions.length; ++i) {
-            Transaction transaction = transactions[i];
-            byte[] data = SecurityUtil.utxos2Bytes(transaction.getInUTXO(), transaction.getOutUTXO());
-            byte[] sign = transaction.getSendSign();
-            PublicKey publicKey = transaction.getSendPublicKey();
-            if (!SecurityUtil.verify(data, sign, publicKey)) {
+    private boolean check(Transaction[] transactions){
+        for(int i=0;i<transactions.length;++i){
+            Transaction transaction=transactions[i];
+            byte[] data=SecurityUtil.utxos2Bytes(transaction.getInUtxos(),transaction.getOutUtxos());
+            byte[] sign=transaction.getSendsign();
+            PublicKey publicKey=transaction.getSendPublickey();
+            if(!SecurityUtil.verify(data,sign,publicKey)){
                 return false;
             }
         }
@@ -86,24 +85,6 @@ public class MinerNode extends Thread {
      *
      * @return 根据参数中的交易构造出的区块体
      */
-//    public BlockBody getBlockBody(Transaction[] transactions) {
-//        assert transactions != null && transactions.length == MiniChainConfig.MAX_TRANSACTION_COUNT;
-//        //todo
-////        Queue<String> queue = new LinkedList<String>();
-////        for(Transaction element: transactions) {
-////            queue.offer(SecurityUtil.sha256Digest(element.toString()));
-////        }
-////        String a, b, c;
-////        while (queue.size() != 1) {
-////            a = queue.poll();
-////            b = queue.poll();
-////            c = SecurityUtil.sha256Digest(a + b);
-////            queue.offer(c);
-////        }
-////        String hash;
-////        hash = queue.poll();
-////        BlockBody blockBody = new BlockBody(hash, transactions);
-////        return blockBody;
     public BlockBody getBlockBody(Transaction[] transactions) {
         assert transactions != null && transactions.length == MiniChainConfig.MAX_TRANSACTION_COUNT;
         //todo
@@ -160,10 +141,11 @@ public class MinerNode extends Thread {
      * @return 相应的区块对象
      */
     public Block getBlock(BlockBody blockBody) {
-        //todo
-        BlockHeader blockHeader =
-                new BlockHeader(SecurityUtil.sha256Digest(blockChain.getNewestBlock().toString()),
-                blockBody.getMerkleRootHash(), Math.abs(new Random().nextLong()));
+        Block preBlock = blockChain.getNewestBlock();
+        String preBlockHash = SecurityUtil.sha256Digest(preBlock.toString());
+
+        BlockHeader blockHeader = new BlockHeader(preBlockHash, blockBody.getMerkleRootHash(),
+                                                    Math.abs(new Random().nextLong()));
         Block block = new Block(blockHeader, blockBody);
         return block;
     }

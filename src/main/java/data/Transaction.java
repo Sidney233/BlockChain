@@ -9,36 +9,35 @@ import java.util.Arrays;
  * 对交易的抽象
  */
 public class Transaction {
-
-    private final UTXO[] inUTXO;
-    private final UTXO[] outUTXO;
-
+    private final UTXO[] inUtxos;
+    private final UTXO[] outUtxos;
+    //发送方的签名，发送方的公钥，方便验证
     private final byte[] sendSign;
-    private final PublicKey sendPublicKey;
+    private final PublicKey sendPublickey;
     private final long timestamp;
 
-    public Transaction(UTXO[] inUTXO, UTXO[] outUTXO, byte[] sendSign, PublicKey sendPublicKey, long timestamp) {
-        this.inUTXO = inUTXO;
-        this.outUTXO = outUTXO;
-        this.sendSign = sendSign;
-        this.sendPublicKey = sendPublicKey;
+    public Transaction(UTXO[] inUtxos,UTXO[] outUtxos,byte[] sendSign,PublicKey sendPublickey,long timestamp) {
+        this.outUtxos=outUtxos;
+        this.inUtxos=inUtxos;
+        this.sendSign=sendSign;
+        this.sendPublickey=sendPublickey;
         this.timestamp = timestamp;
     }
 
-    public UTXO[] getInUTXO() {
-        return inUTXO;
+    public UTXO[] getOutUtxos() {
+        return outUtxos;
     }
 
-    public UTXO[] getOutUTXO() {
-        return outUTXO;
+    public UTXO[] getInUtxos() {
+        return inUtxos;
     }
 
-    public byte[] getSendSign() {
+    public byte[] getSendsign() {
         return sendSign;
     }
 
-    public PublicKey getSendPublicKey() {
-        return sendPublicKey;
+    public PublicKey getSendPublickey() {
+        return sendPublickey;
     }
 
     public long getTimestamp() {
@@ -48,10 +47,10 @@ public class Transaction {
     @Override
     public String toString() {
         return "\nTransaction{" +
-                "\ninUTXO=" + Arrays.toString(inUTXO) +
-                ", \noutUTXO=" + Arrays.toString(outUTXO) +
-                ", \nsendSign=" + SecurityUtil.bytes2HexString(sendSign) +
-                ", \nsendPublicKey=" + SecurityUtil.bytes2HexString(sendPublicKey.getEncoded()) +
+                "\ninUtxos=" + Arrays.toString(inUtxos) +
+                ", \noutUtxos=" + Arrays.toString(outUtxos) +
+                ", \nsendsign=" + SecurityUtil.bytes2HexString(sendSign) +
+                ", \nsendPublickey=" + SecurityUtil.bytes2HexString(sendPublickey.getEncoded()) +
                 ", \ntimestamp=" + timestamp +
                 '}';
     }

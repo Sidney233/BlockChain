@@ -12,50 +12,46 @@ public class Account {
     private final PrivateKey privateKey;
 
     public Account() {
-        KeyPair keyPair = SecurityUtil.secp256k1Generate();
+        KeyPair keyPair= SecurityUtil.secp256k1Generate();
         this.publicKey = keyPair.getPublic();
         this.privateKey = keyPair.getPrivate();
     }
+    public String getWalletAddress(){
+        //公钥哈希
+        byte[] publicKeyHash=SecurityUtil.ripemd160Digest(SecurityUtil.sha256Digest(publicKey.getEncoded()));
+        //往前拼接0x00,
+        byte[] data =new byte[1+publicKeyHash.length];
+        data[0]=(byte)0;
+        for(int i=0;i<publicKeyHash.length;++i){
+            data[i+1]=publicKeyHash[i];
+        }
 
-    public String getWalletAddress() {
-        //先对公钥进行sha256和ripemd160哈希
-        byte[] publicKeyHash = SecurityUtil.ripemd160Digest(
-                SecurityUtil.sha256Digest(privateKey.getEncoded()));
-        //0x00 + 公钥哈希
-        byte [] data = new byte[1 + publicKeyHash.length];
-        data[0] = (byte) 0;
-        for(int i = 0;i < publicKeyHash.length;i++){
-            data[i + 1] = publicKeyHash[i];
+        //两次哈希
+        byte[] doubleHash=SecurityUtil.sha256Digest(SecurityUtil.sha256Digest(data));
+
+        //前面拼接0x00,后面拼接两次hash之后的前四字节
+        byte[] walletEncoded=new byte[1+publicKeyHash.length+4];
+        walletEncoded[0]=(byte)0;
+        for (int i=0;i<publicKeyHash.length;++i){
+            walletEncoded[1+i]=publicKeyHash[i];
+
         }
-        //再对0x00 + 公钥哈希进行double sha256, 取前4字节
-        byte [] doublesha = SecurityUtil.sha256Digest(SecurityUtil.sha256Digest(data));
-        //构建钱包地址
-        byte[] walletEncoded = new byte[data.length + 4];
-        for(int i = 0;i < data.length;i++) {
-            walletEncoded[i] = data[i];
+        for(int i=0;i<4;++i){
+            walletEncoded[1+publicKeyHash.length+i]=doubleHash[i];
         }
-        for(int i = 0;i < 4;i++) {
-            walletEncoded[i + data.length] = doublesha[i];
-        }
-        //对得到的二进制进行Base58编码
-        String walletAddress = Base58Util.encode(walletEncoded);
+
+        //对钱包进行编码
+        String walletAddress= Base58Util.encode(walletEncoded);
+
         return walletAddress;
     }
-
-    public  int getAmount(UTXO[] trueUTXOs) {
-        int amount = 0;
-        for (int i =0; i < trueUTXOs.length; i++) {
-            amount = trueUTXOs[i].getAmount();
+    //计算用户余额
+    public int getAmount(UTXO[] trueUtxos){
+        int amount=0;
+        for(int i=0;i<trueUtxos.length;++i){
+            amount+=trueUtxos[i].getAmount();
         }
         return amount;
-    }
-
-    @Override
-    public String toString() {
-        return "Account{" +
-                "publicKey=" + SecurityUtil.bytes2HexString(publicKey.getEncoded()) +
-                ", privateKey=" + SecurityUtil.bytes2HexString(privateKey.getEncoded()) +
-                '}';
     }
 
     public PublicKey getPublicKey() {
@@ -64,5 +60,13 @@ public class Account {
 
     public PrivateKey getPrivateKey() {
         return privateKey;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "publicKey=" + SecurityUtil.bytes2HexString(publicKey.getEncoded()) +
+                ", privateKey=" + SecurityUtil.bytes2HexString(publicKey.getEncoded()) +
+                '}';
     }
 }

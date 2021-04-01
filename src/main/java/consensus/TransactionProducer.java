@@ -89,7 +89,6 @@ public class TransactionProducer extends Thread {
                 }
             }
 
-            //？
             if(inAmount<txAmount){
                 continue;
             }
